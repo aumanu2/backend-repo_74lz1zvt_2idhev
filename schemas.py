@@ -11,16 +11,11 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List, Literal, Dict, Any
 
-# Example schemas (replace with your own):
-
+# Existing example schemas remain available for reference
 class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
     name: str = Field(..., description="Full name")
     email: str = Field(..., description="Email address")
     address: str = Field(..., description="Address")
@@ -28,21 +23,53 @@ class User(BaseModel):
     is_active: bool = Field(True, description="Whether user is active")
 
 class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
     title: str = Field(..., description="Product title")
     description: Optional[str] = Field(None, description="Product description")
     price: float = Field(..., ge=0, description="Price in dollars")
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Portfolio-specific schemas
+class Project(BaseModel):
+    title: str
+    slug: str
+    summary: str
+    domain: Literal["ML", "Analytics", "Visualization", "NLP", "CV", "Time Series", "MLOps", "Other"]
+    stack: List[str] = []
+    year: int
+    problem: str
+    approach: str
+    dataset: str
+    model: str
+    results: str
+    impact: str
+    github_url: Optional[HttpUrl] = None
+    demo_url: Optional[HttpUrl] = None
+    tags: List[str] = []
+    plotly_fig: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="A lightweight Plotly figure specification (data/layout)",
+    )
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Publication(BaseModel):
+    title: str
+    venue: str
+    year: int
+    authors: List[str]
+    link: Optional[HttpUrl] = None
+    slides_url: Optional[HttpUrl] = None
+    kind: Literal["paper", "talk", "workshop"] = "paper"
+
+class BlogPost(BaseModel):
+    title: str
+    slug: str
+    excerpt: str
+    body: str
+    topics: List[str] = []
+    published_at: str
+
+class ContactMessage(BaseModel):
+    name: str
+    email: str
+    message: str
+    source: Optional[str] = None
